@@ -7,10 +7,9 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    uid = Column(String(255), primary_key=True, unique=True)
     username = Column(String(30), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
-    hashed_password = Column(String(255), nullable=False)
     bio = Column(String(255), nullable=True)
     stats = relationship("Stats", back_populates="user")
 
@@ -21,5 +20,5 @@ class Stats(Base):
     averageWPM = Column(Float)
     accuracy = Column(Float)
     highestWPM = Column(Float)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(String(255), ForeignKey("users.uid"))
     user = relationship("User", back_populates="stats")

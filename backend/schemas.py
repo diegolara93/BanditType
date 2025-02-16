@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class UserBase(BaseModel):
     username: str
     email: str
-    hashed_password: str
+    uid: str
     bio: str
     
 class StatsBase(BaseModel):
@@ -24,7 +24,7 @@ class Stats(StatsBase):
         orm_mode = True
 
 class User(UserBase):
-    id: int
+    uid: str
     stats: Stats
 
     class Config:
