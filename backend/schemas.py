@@ -4,6 +4,7 @@ class UserBase(BaseModel):
     username: str
     email: str
     hashed_password: str
+    bio: str
     
 class StatsBase(BaseModel):
     averageWPM: float = 0

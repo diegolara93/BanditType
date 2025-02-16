@@ -11,6 +11,7 @@ class User(Base):
     username = Column(String(30), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    bio = Column(String(255), nullable=True)
     stats = relationship("Stats", back_populates="user")
 
 class Stats(Base):

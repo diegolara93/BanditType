@@ -15,6 +15,7 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -33,8 +34,13 @@ async def get_users(skip:int=0, limit:int=0, db: Session = Depends(get_db)):
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db, user)
     
-@app.get("/users/{user_id}/stats", response_model=schemas.Stats)
-async def get_user_stats(user_id: int, db: Session = Depends(get_db)):
-    return crud.get_user_stats(db, user_id)
+@app.get("/users/{username}/stats", response_model=schemas.Stats)
+async def get_user_stats(username: str, db: Session = Depends(get_db)):
+    return crud.get_user_stats(db, username)
+
+@app.get("/users/{username}/bio")
+async def get_bio(username: str, db: Session = Depends(get_db)):
+    user = crud.get_user(db, username)
+    return user.bio
 
 
