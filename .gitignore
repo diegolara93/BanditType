@@ -25,7 +25,7 @@
 *.pem
 
 #firebase json
-firebase.json
+credentials.json
 
 # debug
 npm-debug.log*
