@@ -42,3 +42,7 @@ def delete_user(db: Session, username: str):
     db.delete(user)
     db.commit()
     return user
+
+def get_games_played(db: Session, username: str): 
+    user = db.query(models.User).filter(models.User.username == username).first()
+    return user.games_played

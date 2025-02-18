@@ -20,5 +20,6 @@ class Stats(Base):
     averageWPM = Column(Float)
     accuracy = Column(Float)
     highestWPM = Column(Float)
+    games_played = Column(Integer, nullable=False, default=0)
     user_id = Column(String(255), ForeignKey("users.uid"))
     user = relationship("User", back_populates="stats")

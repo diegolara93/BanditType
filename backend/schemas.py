@@ -5,12 +5,13 @@ class UserBase(BaseModel):
     email: str
     uid: str
     bio: str
+
     
 class StatsBase(BaseModel):
     averageWPM: float = 0
     accuracy: float = 0
     highestWPM: float = 0
-
+    games_played: int = 0
 
 class UserCreate(UserBase):
     pass
