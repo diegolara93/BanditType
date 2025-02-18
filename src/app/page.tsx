@@ -1,7 +1,7 @@
 'use client';
 import {createUserWithEmailAndPassword} from "firebase/auth";
 import { auth } from "@/utils/firebase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { set, z } from "zod";
 import { useForm } from "react-hook-form"
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/form"
 import {Input } from "@/components/ui/input"
 import Link from "next/link";
+import NavBar from "@/components/ui/navbar";
+import { useAuth } from "@/utils/authContext";
 
 
 
@@ -28,14 +30,8 @@ instead of using the currect onSubmit method
 */
 
 export default function Home() {
-
   return (
-<div>
-<Link href="/sign-up">
-  <Button>
-    Sign Up
-  </Button>
-  </Link>
+<div className="flex bg-[#1e1e2e] flex-col items-center justify-center h-screen">
 </div>
   )
 }

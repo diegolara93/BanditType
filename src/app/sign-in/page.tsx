@@ -1,5 +1,5 @@
 'use client';
-import {createUserWithEmailAndPassword} from "firebase/auth";
+import {signInWithEmailAndPassword} from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useState } from "react";
 import axios from "axios";
@@ -24,6 +24,7 @@ const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(50),
 });
+import { useRouter } from "next/navigation";
 
 
 /*
@@ -31,33 +32,20 @@ TODO: maybe implement this https://stackoverflow.com/questions/77507221/is-there
 instead of using the currect onSubmit method
 */
 
-export default function SignUp() {
-const handleSignUp = async (username: string, email: string, password: string) => {
-  try {
-    await axios.get(`http://127.0.0.1:8000/users/${username}`);
-    console.error("Username is already taken.");
-    return;
-  } catch (err) {
-    if (axios.isAxiosError(err) && (!err.response || err.response.status !== 404)) {
-      console.error("Failed to check username", err);
-      return;
-    }
-  }
-
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
-
-  await axios.post("http://127.0.0.1:8000/users/", {
-    username,
-    email: user.email,
-    uid: user.uid,
-    bio: "Empty Bio",
-  });
-  console.log("User created successfully");
+export default function SignIn() {
+const router = useRouter();
+const handleSignIn = async (username: string, email: string, password: string) => {
+ try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("signed in, email: ", userCredential.user.email);
+    router.push("/")
+ } catch (err) {
+   console.error("Failed to sign in", err);
+ }
 };
 
 const onSubmit = async (data: z.infer<typeof formSchema>) => {
-  await handleSignUp(data.username, data.email, data.password);
+  await handleSignIn(data.username, data.email, data.password);
 };
 
 
@@ -78,7 +66,7 @@ const onSubmit = async (data: z.infer<typeof formSchema>) => {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel className="text-[#cba6f7]">Username</FormLabel>
               <FormControl>
                 <Input placeholder="username" {...field} />
               </FormControl>
@@ -92,7 +80,7 @@ const onSubmit = async (data: z.infer<typeof formSchema>) => {
        name="email"
         render={({ field }) => (
                    <FormItem>
-                   <FormLabel>Email</FormLabel>
+                   <FormLabel className="text-[#cba6f7]">Email</FormLabel>
                    <FormControl>
                      <Input placeholder="email" {...field} />
                    </FormControl>
@@ -104,7 +92,7 @@ const onSubmit = async (data: z.infer<typeof formSchema>) => {
        name="password"
         render={({ field }) => (
                    <FormItem>
-                   <FormLabel>Password</FormLabel>
+                   <FormLabel className="text-[#cba6f7]">Password</FormLabel>
                    <FormControl>
                      <Input 
                      type="password"
@@ -117,6 +105,7 @@ const onSubmit = async (data: z.infer<typeof formSchema>) => {
         <Button type="submit">Submit</Button>
       </form>
     </Form>
+    <p>Dont have an account? Create one</p>
     </div>
   );
 }

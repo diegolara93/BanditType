@@ -17,9 +17,15 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+# Returns all the user stats
 def get_user_stats(db: Session, username: str):
     user = db.query(models.User).filter(models.User.username == username).first()
     return user.stats
+
+# Returns just the highest wpm
+def get_highest_wpm(db: Session, username: str):
+    user = db.query(models.User).filter(models.User.username == username).first()
+    return user.stats.highestWPM
 
 def update_bio(db: Session, username: str, bio: str):
     user = db.query(models.User).filter(models.User.username == username).first()
@@ -28,11 +34,27 @@ def update_bio(db: Session, username: str, bio: str):
     db.refresh(user)
     return user
 
-def update_stats(db: Session, username: str, stats: schemas.Stats):
+# def update_stats(db: Session, username: str, stats: schemas.Stats):
+#     user = db.query(models.User).filter(models.User.username == username).first()
+#     user.stats.averageWPM = stats.averageWPM
+#     user.stats.accuracy = stats.accuracy
+#     user.stats.highestWPM = stats.highestWPM
+#     db.commit()
+#     db.refresh(user)
+#     return user
+
+def update_wpm(db: Session, username: str, wpm: int):
     user = db.query(models.User).filter(models.User.username == username).first()
-    user.stats.averageWPM = stats.averageWPM
-    user.stats.accuracy = stats.accuracy
-    user.stats.highestWPM = stats.highestWPM
+    user.stats.averageWPM = (user.stats.averageWPM * user.games_played + wpm) / (user.games_played + 1)
+    if wpm > user.stats.highestWPM:
+        user.stats.highestWPM = wpm
+    db.commit()
+    db.refresh(user)
+    return user
+
+def increment_games_played(db: Session, username: str):
+    user = db.query(models.User).filter(models.User.username == username).first()
+    user.games_played += 1
     db.commit()
     db.refresh(user)
     return user
