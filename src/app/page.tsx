@@ -21,6 +21,7 @@ import {Input } from "@/components/ui/input"
 import Link from "next/link";
 import NavBar from "@/components/ui/navbar";
 import { useAuth } from "@/utils/authContext";
+import Typer from "@/components/ui/typer";
 
 
 
@@ -31,7 +32,8 @@ instead of using the currect onSubmit method
 
 export default function Home() {
   return (
-<div className="flex bg-[#1e1e2e] flex-col items-center justify-center h-screen">
+<div className="flex bg-[#1e1e2e] flex-col items-center justify-center h-[45-rem]">
+  <Typer></Typer>
 </div>
   )
 }
