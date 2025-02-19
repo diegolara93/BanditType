@@ -32,6 +32,8 @@ export default function NavBar() {
 
     let button
 
+    let username = user?.displayName
+
     if (loading) {
         button = (
         <Link className={navigationMenuTriggerStyle()} href="/sign-up">
@@ -42,6 +44,7 @@ export default function NavBar() {
         )
     }
     else if (user) {
+      console.log(username)
         button = (
 
         <Link onClick={() => auth.signOut()} className="text-[#f9e2af] font-bold text-xl bg-transparent group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors  hover:text-[#b4befe]  focus:outline-none disabled:pointer-events-none" href={""}>

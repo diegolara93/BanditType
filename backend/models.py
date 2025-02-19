@@ -11,15 +11,15 @@ class User(Base):
     username = Column(String(30), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     bio = Column(String(255), nullable=True)
-    stats = relationship("Stats", back_populates="user")
+    stats = relationship("Stats", back_populates="user", uselist=False)
 
 class Stats(Base):
     __tablename__ = "stats"
     
     id = Column(Integer, primary_key=True, index=True)
-    averageWPM = Column(Float)
+    averageWPM = Column(Float, nullable=False, default=0)
     accuracy = Column(Float)
-    highestWPM = Column(Float)
+    highestWPM = Column(Float, nullable=False, default=0)
     games_played = Column(Integer, nullable=False, default=0)
-    user_id = Column(String(255), ForeignKey("users.uid"))
-    user = relationship("User", back_populates="stats")
+    username = Column(String(30), ForeignKey("users.username"))
+    user = relationship("User", back_populates="stats", uselist=False)

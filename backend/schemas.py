@@ -12,6 +12,7 @@ class StatsBase(BaseModel):
     accuracy: float = 0
     highestWPM: float = 0
     games_played: int = 0
+    username: str
 
 class UserCreate(UserBase):
     pass

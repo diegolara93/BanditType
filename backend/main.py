@@ -68,8 +68,25 @@ async def get_bio(username: str, db: Session = Depends(get_db)):
 async def update_bio(username: str, bio: str, db: Session = Depends(get_db)):
     return crud.update_bio(db, username, bio)
 
-@app.put("/users/{username}/stats")
+@app.post("/users/{username}/wpm")
+async def update_wpm(username: str, wpm: float, db: Session = Depends(get_db)):
+    user = crud.update_wpm(db, username, wpm)
+    return user.stats
+
+@app.post("/users/{username}/stats") 
 async def update_stats(username: str, stats: schemas.Stats, db: Session = Depends(get_db)):
-    return crud.update_stats(db, username, stats)
+    user = crud.update_stats(db, username, stats)
+    return user.stats
+
+@app.get("/users/{uid}/username") 
+async def get_username_from_uid(uid: str, db: Session = Depends(get_db)):
+    username = crud.get_username_from_id(db, uid)
+    return username
 
 
+# This is for the stats endpoint, seperate into a router later
+
+@app.get("/stats/", response_model=list[schemas.Stats])
+async def get_stats(limit:int=0, db: Session = Depends(get_db)):
+    topUsers = crud.get_top_stats(db, limit)
+    return topUsers
