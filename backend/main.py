@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, WebSocket
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from models import Base
@@ -90,3 +90,16 @@ async def get_username_from_uid(uid: str, db: Session = Depends(get_db)):
 async def get_stats(limit:int=0, db: Session = Depends(get_db)):
     topUsers = crud.get_top_stats(db, limit)
     return topUsers
+
+# This is for the websocket used for the typing duel I plan to implement later
+# @app.websocket("/ws")
+# async def websocket_endpoint(websocket: WebSocket):
+#     await websocket.accept()
+#     try:
+#         while True:
+#             data = await websocket.receive_text()
+#             await websocket.send_text(f"Message text was: {data}")
+#     except Exception  as e:
+#         print(e)        
+#     finally:
+#         await websocket.close()
