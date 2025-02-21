@@ -22,7 +22,7 @@ import Link from "next/link";
 import NavBar from "@/components/ui/navbar";
 import { useAuth } from "@/utils/authContext";
 import Typer from "@/components/ui/typer";
-import Settings from "@/components/ui/settings";
+
 
 
 
@@ -34,7 +34,7 @@ instead of using the currect onSubmit method
 export default function Home() {
   return (
 <div className="flex bg-[#1e1e2e] flex-col items-center mt-[10rem] justify-center h-[45-rem]">
-  <Settings></Settings>
+
   <Typer></Typer>
 </div>
   )
