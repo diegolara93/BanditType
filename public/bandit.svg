@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="80" viewBox="0 0 240 80">
+  <!-- Minimalist face outline -->
+  <circle cx="40" cy="40" r="30" fill="none" stroke="#cba6f7" stroke-width="2"/>
+  
+  <!-- Minimalist bandit mask -->
+  <rect x="20" y="32" width="40" height="8" rx="4" fill="#cba6f7"/>
+  
+  <!-- Enhanced eyes -->
+  <circle cx="30" cy="40" r="3" fill="#45475a" stroke="#cba6f7" stroke-width="3"/>
+  <circle cx="50" cy="40" r="3" fill="#45475a" stroke="#cba6f7" stroke-width="3"/>
+  
+  <!-- Site text -->
+  <text x="80" y="47" font-family="Helvetica, Arial, sans-serif" font-size="28" fill="#cba6f7">bandittype</text>
+</svg>

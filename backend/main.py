@@ -92,14 +92,14 @@ async def get_stats(limit:int=0, db: Session = Depends(get_db)):
     return topUsers
 
 # This is for the websocket used for the typing duel I plan to implement later
-# @app.websocket("/ws")
-# async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     try:
-#         while True:
-#             data = await websocket.receive_text()
-#             await websocket.send_text(f"Message text was: {data}")
-#     except Exception  as e:
-#         print(e)        
-#     finally:
-#         await websocket.close()
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Message text was: {data}")
+    except Exception  as e:
+        print(e)        
+    finally:
+        await websocket.close()

@@ -77,7 +77,7 @@ export default function Typer() {
             const wpm = getWPM();
             let uid = auth.currentUser?.uid
             if (!uid) {
-                console.error("No user logged in")
+                console.log("No user logged in")
                 return;
             }
             getUsername(uid).then(username => {
