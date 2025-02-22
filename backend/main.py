@@ -22,6 +22,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        if self.active_connections == []:
+            await websocket.accept()
+            self.active_connections.append(websocket)
+        else:
+            await websocket.close()
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
 def get_db():
     db = SessionLocal()
     try:
@@ -92,7 +110,7 @@ async def get_stats(limit:int=0, db: Session = Depends(get_db)):
     return topUsers
 
 # This is for the websocket used for the typing duel I plan to implement later
-@app.websocket("/ws")
+@app.websocket("/duel/{username}")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
