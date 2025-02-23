@@ -1,13 +1,12 @@
 'use client';
-import {createUserWithEmailAndPassword} from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/utils/firebase";
 import { useState } from "react";
 import axios from "axios";
-import { set, z } from "zod";
-import { useForm } from "react-hook-form"
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,51 +15,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import {Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const formSchema = z.object({
-  username: z.string().min(4).max(50),
-  email: z.string().email(),
-  password: z.string().min(8).max(50),
+  username: z.string().min(4, "Username must be at least 4 characters").max(50),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters").max(50),
 });
 
-
-/*
-TODO: maybe implement this https://stackoverflow.com/questions/77507221/is-there-a-way-to-get-form-values-with-onchange-using-shadcn-form-zod
-instead of using the currect onSubmit method
-*/
-
 export default function SignUp() {
-const handleSignUp = async (username: string, email: string, password: string) => {
-  try {
-    await axios.get(`http://127.0.0.1:8000/users/${username}`);
-    console.error("Username is already taken.");
-    return;
-  } catch (err) {
-    if (axios.isAxiosError(err) && (!err.response || err.response.status !== 404)) {
-      console.error("Failed to check username", err);
-      return;
-    }
-  }
-
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
-
-  await axios.post("http://127.0.0.1:8000/users/", {
-    username,
-    email: user.email,
-    uid: user.uid,
-    bio: "Empty Bio",
-  });
-  console.log("User created successfully");
-};
-
-const onSubmit = async (data: z.infer<typeof formSchema>) => {
-  await handleSignUp(data.username, data.email, data.password);
-};
-
-
+  const [globalError, setGlobalError] = useState("");
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,54 +36,110 @@ const onSubmit = async (data: z.infer<typeof formSchema>) => {
       password: "",
     },
   });
-  return (
-    <div className="bg-[#1e1e2e] flex flex-col items-center justify-center h-screen"> 
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="username" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+  
+  const handleSignUp = async (username: string, email: string, password: string) => {
 
-          )}
-        />
-       <FormField
-       control={form.control}
-       name="email"
-        render={({ field }) => (
-                   <FormItem>
-                   <FormLabel>Email</FormLabel>
-                   <FormControl>
-                     <Input placeholder="email" {...field} />
-                   </FormControl>
-                 </FormItem>
-        )}
-        />
-               <FormField
-       control={form.control}
-       name="password"
-        render={({ field }) => (
-                   <FormItem>
-                   <FormLabel>Password</FormLabel>
-                   <FormControl>
-                     <Input 
-                     type="password"
-                    placeholder="password" {...field} />
-                   </FormControl>
-                 </FormItem>
-        )}
-        />
-        
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    setGlobalError("");
+    
+
+    try {
+      await axios.get(`http://127.0.0.1:8000/users/${username}`);
+      form.setError("username", { message: "Username is already taken." });
+      return;
+    } catch (err) {
+      if (axios.isAxiosError(err) && (!err.response || err.response.status !== 404)) {
+        setGlobalError("Failed to check username. Please try again.");
+        return;
+      }
+    }
+    
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      await axios.post("http://127.0.0.1:8000/users/", {
+        username,
+        email: user.email,
+        uid: user.uid,
+        bio: "Empty Bio",
+      });
+      console.log("User created successfully");
+    } catch (err: any) {
+      if (err.code === "auth/email-already-in-use") {
+        form.setError("email", { message: "Email is already in use." });
+      } else {
+        setGlobalError("An error occurred during sign up. Please try again.");
+      }
+    }
+  };
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    await handleSignUp(data.username, data.email, data.password);
+  };
+
+  return (
+    <div className="bg-[#1e1e2e] flex flex-col items-center justify-center h-[50rem]">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[#cba6f7]">Username</FormLabel>
+                <FormControl>
+                  <Input className="text-[#cdd6f4]" placeholder="username" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[#cba6f7]">Email</FormLabel>
+                <FormControl>
+                  <Input className="text-[#cdd6f4]" placeholder="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[#cba6f7]">Password</FormLabel>
+                <FormControl>
+                  <Input
+                    className="text-[#cdd6f4]"
+                    type="password"
+                    placeholder="password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <Button className="ml-14 text-[#1e1e2e] bg-[#89dceb]" type="submit">Sign Up</Button>
+        </form>
+      </Form>
+      
+      {globalError && (
+        <p className="mt-3 text-red-500">{globalError}</p>
+      )}
+      
+      <p className="mt-3 text-[#cba6f7]">
+        Have an account?{" "}
+        <Link className="underline" href="/sign-up">
+          Sign in
+        </Link>
+      </p>
     </div>
   );
 }

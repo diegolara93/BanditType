@@ -17,10 +17,36 @@ import { Button } from "./button"
 import { useAuth } from "@/utils/authContext"
 import { useEffect, useState } from "react"
 import { auth } from "@/utils/firebase"
-import { ClipboardList, House, Keyboard, LogOut, UserPen } from "lucide-react"
+import { ClipboardList, Github, House, Keyboard, LogIn, LogOut, Swords, UserPen } from "lucide-react"
+import axios from "axios"
+
 
 export default function NavBar() {
+  const getUsername = async(uid: string) => {
+    try {
+        const resp = await axios.get(`http://127.0.0.1:8000/users/${uid}/username`)
+        let username = JSON.stringify(resp.data).slice(1, -1);
+        return username
+    } catch (error) {
+        console.log("Failed to get username", error);
+    }
+}
   const { user, loading } = useAuth()
+  const [username, setUsername] = useState("")
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      if (user) {
+        const name = await getUsername(user.uid);
+        if (name) {
+          setUsername(name);
+          console.log("User: ", username)
+        }
+      }
+    };
+    fetchUsername();
+  }, [user]);
+
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
     setIsMounted(true)
@@ -31,6 +57,8 @@ export default function NavBar() {
   }
 
   let button
+  let profile
+
 
   if (loading) {
     button = (
@@ -49,19 +77,34 @@ export default function NavBar() {
         <p className="text-sm">Sign Out</p>
       </Link>
     )
+
+    profile = (
+      <NavigationMenuItem>
+      <Link href="/profile/[username]" as={`/profile/${username}`} legacyBehavior passHref>
+        <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+          <UserPen className="h-5" />
+          <p className="text-sm">Profile</p>
+        </NavigationMenuLink>
+      </Link>
+    </NavigationMenuItem>
+    )
   } else {
     button = (
       <Link
         href="/sign-in"
         className="text-[#f9e2af] font-bold text-xl bg-transparent group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:text-[#b4befe] focus:outline-none disabled:pointer-events-none"
       >
+        <LogIn className="mr-2"/>
         Sign In
       </Link>
+    )
+    profile =(
+      <></>
     )
   }
 
   let my_svg = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="130" height="40" viewBox="0 0 240 80">
+    <svg xmlns="http://www.w3.org/2000/svg" width="130" height="40" viewBox="0 0 200 80">
   <circle cx="40" cy="40" r="30" fill="none" stroke="#cba6f7" strokeWidth="2"/>
   
 
@@ -74,9 +117,8 @@ export default function NavBar() {
   <text x="80" y="47" fontFamily="Helvetica, Arial, sans-serif" fontSize="28" fill="#cba6f7">banditType</text>
 </svg>
   )
-
   return (
-    <div className="w-screen bg-[#1e1e2e] flex items-center justify-between pl-[3rem] pr-[3rem] pt-2 border-b border-[#181825]">
+    <div className="w-screen bg-[#1e1e2e] flex items-center justify-between pl-[1rem] pr-[3rem] pt-2 border-b border-[#181825]">
       <NavigationMenu>
         <NavigationMenuList className="flex space-x-1">
           <NavigationMenuItem>
@@ -84,6 +126,11 @@ export default function NavBar() {
               <a>
                 {my_svg}
               </a>
+            </Link>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link  className="text-[#cba6f7]" href={"https://github.com/diegolara93/BanditType"}>
+            <Github className="h-5" ></Github>
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
@@ -95,16 +142,18 @@ export default function NavBar() {
             </Link>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Link href="/me" legacyBehavior passHref>
+            <Link href="/duels" legacyBehavior passHref>
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <UserPen className="h-5" />
-                <p className="text-sm">Profile</p>
+                <Swords className="h-5"/>
+                <p className="text-sm">Duels</p>
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
+          {profile}
         </NavigationMenuList>
       </NavigationMenu>
-      <div>{button}</div>
+      <div>
+        {button}</div>
     </div>
   )
 }

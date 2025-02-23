@@ -210,8 +210,8 @@ export default function Typer() {
       </div>
       {endTime && (
         <div className="mt-4 flex flex-col items-center">
-          <p className="text-xl">Finished! WPM: {getWPM()}</p>
-          <Button onClick={resetGame} className="mt-2">
+          <p className="text-xl text-[#a6adc8]">Finished! WPM: {getWPM()}</p>
+          <Button onClick={resetGame} className="mt-2 bg-[#11111b]">
             Restart
           </Button>
         </div>

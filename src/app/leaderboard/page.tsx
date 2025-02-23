@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 interface IUserStats {
   username: string;
@@ -36,18 +37,20 @@ export default function Leaderboard() {
         {loading ? (
           <p className="text-center">Loading...</p>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-6 justify-items-center">
             {userData.map((user, index) => (
               <Card 
                 key={user.username} 
-                className="bg-[#181825] border border-[#313244] p-0 rounded-lg shadow-md"
+                className="bg-[#181825] w-[80%] border border-[#313244] p-0 rounded-lg shadow-md"
               >
                 <CardHeader>
+                  <Link className="w-[10%]" href="/profile/[username]" as={`/profile/${user.username}`}>
                   <CardTitle className="text-xl font-bold text-[#fab387]">
                     {index + 1}. {user.username}
                   </CardTitle>
+                  </Link>
                 </CardHeader>
-                <CardContent className="mt-2">
+                <CardContent className="mt-0">
                   <p className="text-[#fab387]">
                     Average WPM: <span className="font-medium">{user.averageWPM}</span>
                   </p>
