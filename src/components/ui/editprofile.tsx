@@ -5,6 +5,8 @@ import axios from 'axios';
 import { PencilLine } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { Button } from './button';
+import { Textarea } from './textarea';
 
 interface EditProfileButtonProps {
   username: string;
@@ -23,6 +25,7 @@ const getUsername = async(uid: string) => {
 }
 export default  function EditProfileButton({ username }: EditProfileButtonProps) {
   const { user, loading } = useAuth();
+  const [changeName, setChangeName] = useState(false)
 
   const [fetchedUsername, setFetchedUsername] = useState<string | undefined>(undefined);
 
@@ -36,9 +39,32 @@ export default  function EditProfileButton({ username }: EditProfileButtonProps)
     return null;
   }
 
-  return (
-    <Link href="temp">
+  let edit
+
+  const handleClick = () => {
+    setChangeName(!changeName)
+  }
+
+  if (!changeName) {
+    edit = (
+        <Link onClick={handleClick} href="">
     <PencilLine className='inline h-5 text-[#f38ba8]' />
     </Link>
+    )
+  } else {
+    edit = (
+        <div className='inline w-full'>
+        <Link onClick={handleClick} href="">
+    <PencilLine className='inline h-5 text-[#f38ba8]' />
+    </Link>
+    <Textarea className='resize-none h-[1rem]' placeholder='Enter new bio' />
+    <Button className='ml-16'>Submit</Button>
+    </div>
+    )
+  }
+  console.log(changeName)
+  
+  return (
+    edit
   );
 }

@@ -114,7 +114,7 @@ export default function NavBar() {
   <circle cx="30" cy="40" r="3" fill="#45475a" stroke="#cba6f7" strokeWidth="3"/>
   <circle cx="50" cy="40" r="3" fill="#45475a" stroke="#cba6f7" strokeWidth="3"/>
   
-  <text x="80" y="47" fontFamily="Helvetica, Arial, sans-serif" fontSize="28" fill="#cba6f7">banditType</text>
+  <text x="80" y="47" fontSize="28" fill="#cba6f7">banditType</text>
 </svg>
   )
   return (

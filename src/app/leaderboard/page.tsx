@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 
 interface IUserStats {
   username: string;
@@ -35,7 +36,9 @@ export default function Leaderboard() {
       <div className="container mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-center">Top 100 Players</h1>
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <div className="flex justify-center">
+           <Image src="/cropped_dog.gif" width={100} height={100} alt={""} />
+           </div>
         ) : (
           <div className="grid gap-6 justify-items-center">
             {userData.map((user, index) => (
