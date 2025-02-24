@@ -5,8 +5,10 @@ import { auth } from "@/utils/firebase";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { Swords } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
+
 
 class UserStats {
     averageWPM:  number;
@@ -30,6 +32,8 @@ export default async function Profile({
 }: {
     params: Promise<{username: string}>;
 }) {
+
+
 
 
     const getBio = async(username: string) => {

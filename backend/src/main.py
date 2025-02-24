@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, Request
+from fastapi import FastAPI, Depends, HTTPException, WebSocket
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-from auth import get_current_user
 from models import Base
 import schemas, crud
 from fastapi.middleware.cors import CORSMiddleware
@@ -83,23 +82,15 @@ async def get_bio(username: str, db: Session = Depends(get_db)):
     user = crud.get_user(db, username)
     return user.bio
 
-'''
-Depends(get_current_user) will check that the caller is authenticated, if they are not authenticated it will raise an exception.
-'''
-
 @app.put("/users/{username}/bio")
-async def update_bio(bio: str, user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
-    uid = user.get("uid")
-    return crud.update_bio(db, uid, bio)
+async def update_bio(username: str, bio: str, db: Session = Depends(get_db)):
+    return crud.update_bio(db, username, bio)
 
 @app.post("/users/{username}/wpm")
-async def update_wpm(wpm: float, user: dict = Depends(get_current_user) ,db: Session = Depends(get_db)):
-    user_uid = user.get("uid")
-    user = crud.update_wpm(db, user_uid, wpm)
+async def update_wpm(username: str, wpm: float, db: Session = Depends(get_db)):
+    user = crud.update_wpm(db, username, wpm)
     return user.stats
 
-'''
-'''
 @app.post("/users/{username}/stats") 
 async def update_stats(username: str, stats: schemas.Stats, db: Session = Depends(get_db)):
     user = crud.update_stats(db, username, stats)

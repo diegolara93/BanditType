@@ -68,7 +68,7 @@ export default function SignIn() {
               <FormItem>
                 <FormLabel className="text-[#cba6f7]">Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="email" {...field} />
+                  <Input className="text-[#cdd6f4]" placeholder="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -81,7 +81,7 @@ export default function SignIn() {
               <FormItem>
                 <FormLabel className="text-[#cba6f7]">Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="password" {...field} />
+                  <Input className="text-[#cdd6f4]" type="password" placeholder="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

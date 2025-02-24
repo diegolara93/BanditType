@@ -6,27 +6,21 @@ import { generate } from 'random-words';
 import axios from 'axios';
 import { auth } from '@/utils/firebase';
 import { ChevronsRight, ChevronsLeft } from 'lucide-react';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
-const updateWPM = async (wpm: number, username: string) => {
+const updateWPM = async (wpm: number, uid: string, user: User) => {
   try {
+    const token = await user.getIdToken();
     const resp = await axios.post(
-      `http://127.0.0.1:8000/users/${username}/wpm?wpm=${wpm}`
+      `http://127.0.0.1:8000/users/${uid}/wpm?wpm=${wpm}`,  {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
     );
     console.log("Updated wpm", resp);
   } catch (error) {
     console.error("Failed to update wpm", error);
-  }
-};
-
-const getUsername = async (uid: string) => {
-  try {
-    const resp = await axios.get(`http://127.0.0.1:8000/users/${uid}/username`);
-    // Without returning the .slice(1, -1) the username is returned with quotes which messes with the post request
-    let username = JSON.stringify(resp.data).slice(1, -1);
-    console.log("got name", username);
-    return username;
-  } catch (error) {
-    console.error("Failed to get username", error);
   }
 };
 
@@ -39,6 +33,15 @@ export default function Typer() {
   const [wordCount, setWordCount] = useState(10);
   const [minLength, setMinLength] = useState(3);
   const [maxLength, setMaxLength] = useState(7);
+  const [user, setUser] = useState<User | null>(null);
+
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const generateNewText = () => {
     const generatedText = generate({
@@ -101,11 +104,9 @@ export default function Typer() {
         console.log("No user logged in");
         return;
       }
-      getUsername(uid).then(username => {
-        if (username) {
-          updateWPM(wpm, username);
-        }
-      });
+      if (user) {
+        updateWPM(wpm, uid, user);
+      }
     }
   }, [input, endTime, textToType]);
 

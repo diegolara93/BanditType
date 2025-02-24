@@ -27,8 +27,8 @@ def get_highest_wpm(db: Session, username: str):
     user = db.query(models.User).filter(models.User.username == username).first()
     return user.stats.highestWPM
 
-def update_bio(db: Session, username: str, bio: str):
-    user = db.query(models.User).filter(models.User.username == username).first()
+def update_bio(db: Session, uid: str, bio: str):
+    user = db.query(models.User).filter(models.User.uid == uid).first()
     user.bio = bio
     db.commit()
     db.refresh(user)
@@ -44,8 +44,8 @@ def update_stats(db: Session, username: str, stats: schemas.Stats):
     db.refresh(user)
     return user
 
-def update_wpm(db: Session, username: str, wpm: float):
-    user = db.query(models.User).filter(models.User.username == username).first()
+def update_wpm(db: Session, uid: str, wpm: float):
+    user = db.query(models.User).filter(models.User.uid == uid).first()
     user.stats.averageWPM = (user.stats.averageWPM * user.stats.games_played + wpm) / (user.stats.games_played + 1)
     user.stats.games_played += 1
     if wpm > user.stats.highestWPM:
