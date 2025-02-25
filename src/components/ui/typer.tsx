@@ -8,6 +8,7 @@ import { auth } from '@/utils/firebase';
 import { ChevronsRight, ChevronsLeft } from 'lucide-react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 
+
 const updateWPM = async (wpm: number, uid: string, user: User) => {
   try {
     const token = await user.getIdToken();
@@ -29,12 +30,17 @@ export default function Typer() {
   const [input, setInput] = useState('');
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [wordCount, setWordCount] = useState(10);
   const [minLength, setMinLength] = useState(3);
   const [maxLength, setMaxLength] = useState(7);
   const [user, setUser] = useState<User | null>(null);
 
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, [])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -120,6 +126,11 @@ export default function Typer() {
   if (!textToType) {
     return <div>Loading</div>;
   }
+
+  if (!isMounted) {
+    return null;
+  }
+
 
   return (
     <div className="flex flex-col w-[60rem] items-center justify-center p-4 space-y-6">

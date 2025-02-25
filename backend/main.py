@@ -85,18 +85,20 @@ async def get_bio(username: str, db: Session = Depends(get_db)):
 
 '''
 Depends(get_current_user) will check that the caller is authenticated, if they are not authenticated it will raise an exception.
+These routes are protected with the JWT token provided by Firebase.
 '''
 
-@app.put("/users/{username}/bio")
+@app.put("/users/{uid}/bio")
 async def update_bio(bio: str, user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     uid = user.get("uid")
     return crud.update_bio(db, uid, bio)
 
-@app.post("/users/{username}/wpm")
+@app.post("/users/{uid}/wpm")
 async def update_wpm(wpm: float, user: dict = Depends(get_current_user) ,db: Session = Depends(get_db)):
     user_uid = user.get("uid")
     user = crud.update_wpm(db, user_uid, wpm)
     return user.stats
+
 
 '''
 '''
