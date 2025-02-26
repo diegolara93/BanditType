@@ -1,6 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, auth
-from fastapi import Header, HTTPException, Request, status, Depends
+from fastapi import  HTTPException, Request, status, Depends
 
 
 cred = credentials.Certificate("./credentials.json")
@@ -22,7 +22,6 @@ async def get_current_user(request: Request):
     id_token = parts[1]
     try:
         decoded_token = auth.verify_id_token(id_token)
-        print(decoded_token)
         return decoded_token  # This dict contains the user's UID and other info
     except Exception:
         raise HTTPException(
