@@ -7,9 +7,31 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from './button';
 import { Textarea } from './textarea';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/utils/firebase';
 
 interface EditProfileButtonProps {
   username: string;
+}
+
+
+const updateBio = async(uid: string, bio: string, user: User) => {
+  try {
+    const token = await user.getIdToken();
+    const resp = await axios.put(`http://127.0.0.1:8000/users/${uid}/bio`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        bio: bio
+      }
+    });
+    alert("Bio changed, please refresh");
+    return true;
+  } catch (error) {
+    console.log("Error updating bio: ", error);
+    return false;
+  }
 }
 
 
@@ -24,10 +46,27 @@ const getUsername = async(uid: string) => {
     }
 }
 export default  function EditProfileButton({ username }: EditProfileButtonProps) {
-  const { user, loading } = useAuth();
   const [changeName, setChangeName] = useState(false)
-
+  const [isMounted, setIsMounted] = useState(false);
   const [fetchedUsername, setFetchedUsername] = useState<string | undefined>(undefined);
+
+
+    const [user, setUser] = useState<User | null>(null);
+    const [bioText, setBioText] = useState("");
+
+  
+  
+    useEffect(() => {
+      setIsMounted(true);
+    }, [])
+  
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser);
+      });
+      return () => unsubscribe();
+    }, []);
+
 
   useEffect(() => {
     if (user) {
@@ -41,25 +80,39 @@ export default  function EditProfileButton({ username }: EditProfileButtonProps)
 
   let edit
 
+  if (!isMounted) {
+    return null;
+  }
+
   const handleClick = () => {
     setChangeName(!changeName)
   }
 
+
   if (!changeName) {
     edit = (
         <Link onClick={handleClick} href="">
-    <PencilLine className='inline h-5 text-[#f38ba8]' />
-    </Link>
+          <PencilLine className='inline h-5 text-[#f38ba8]' />
+        </Link>
     )
   } else {
     edit = (
         <div className='inline w-full'>
-        <Link onClick={handleClick} href="">
-    <PencilLine className='inline h-5 text-[#f38ba8]' />
-    </Link>
-    <Textarea className='resize-none h-[1rem]' placeholder='Enter new bio' />
-    <Button className='ml-16'>Submit</Button>
-    </div>
+          <Link onClick={handleClick} href="">
+            <PencilLine className='inline h-5 text-[#f38ba8]' />
+          </Link>
+          <Textarea 
+            className='resize-none h-[1rem]' 
+            placeholder='Enter new bio'
+            value={bioText}
+            onChange={(e) => setBioText(e.target.value)}
+          />
+          <Button onClick={() =>  {
+            handleClick
+            updateBio(user.uid, bioText, user)
+          }
+            } className='ml-16'>Submit</Button>
+        </div>
     )
   }
   console.log(changeName)
