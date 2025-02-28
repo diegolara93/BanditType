@@ -1,0 +1,15 @@
+services:
+  app:
+    image: bandittypefrontend
+    build:
+      context: ./
+      target: production
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # For production, we should NOT use volumes as they would override
+    # the built files in the container
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - /app/.next
