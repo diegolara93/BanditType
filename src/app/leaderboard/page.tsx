@@ -16,11 +16,13 @@ interface IUserStats {
 export default function Leaderboard() {
   const [userData, setUserData] = useState<IUserStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
+
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        const resp = await axios.get("http://127.0.0.1:8000/stats/?limit=100");
+        const resp = await axios.get(`${apiBaseURL}/stats/?limit=100`);
         setUserData(resp.data);
       } catch (error) {
         console.error("Failed to fetch stats", error);

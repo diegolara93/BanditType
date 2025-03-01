@@ -1,6 +1,6 @@
 services:
   app:
-    image: bandittypefrontend
+    image: btprodfe
     build:
       context: ./
       target: production

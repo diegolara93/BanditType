@@ -27,6 +27,7 @@ const formSchema = z.object({
 
 export default function SignUp() {
   const [globalError, setGlobalError] = useState("");
+  const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,7 +44,7 @@ export default function SignUp() {
     
 
     try {
-      await axios.get(`http://127.0.0.1:8000/users/${username}`);
+      await axios.get(`${apiBaseURL}/users/${username}`);
       form.setError("username", { message: "Username is already taken." });
       return;
     } catch (err) {
@@ -57,7 +58,7 @@ export default function SignUp() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
-      await axios.post("http://127.0.0.1:8000/users/", {
+      await axios.post(`${apiBaseURL}/users/`, {
         username,
         email: user.email,
         uid: user.uid,

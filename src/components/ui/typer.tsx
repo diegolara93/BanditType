@@ -9,11 +9,14 @@ import { ChevronsRight, ChevronsLeft } from 'lucide-react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 
 
+const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
+
+
 const updateWPM = async (wpm: number, uid: string, user: User) => {
   try {
     const token = await user.getIdToken();
     const resp = await axios.post(
-      `http://127.0.0.1:8000/users/${uid}/wpm?wpm=${wpm}`,  {}, {
+      `${apiBaseURL}/users/${uid}/wpm?wpm=${wpm}`,  {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         }

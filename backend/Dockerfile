@@ -1,13 +1,25 @@
-FROM python:3.13-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies
 COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir gunicorn
 
-RUN  pip install --no-cache-dir -r requirements.txt
+# Copy application code
+COPY . .
 
-COPY . /app
-
-EXPOSE 8000
-
-CMD [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" ]
+# Run the application with Gunicorn and Uvicorn workers
+CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]

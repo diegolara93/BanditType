@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, Request
+from fastapi import Body, FastAPI, Depends, HTTPException, WebSocket, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from auth import get_current_user
@@ -14,6 +14,10 @@ app = FastAPI()
 origins = [
     "http://localhost:3000"
     "http://127.0.0.1:3000"
+    "https://hcpwjrnw25.us-east-1.awsapprunner.com"
+    "http://hcpwjrnw25.us-east-1.awsapprunner.com"
+    "http://bandittype.com"
+    "https://bandittype.com"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +25,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 class ConnectionManager:
@@ -66,6 +71,27 @@ async def get_users(skip:int=0, limit:int=0, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
+@app.get("/test-auth")
+async def test_auth():
+    import requests
+    
+    try:
+        response = requests.get(
+            "https://www.googleapis.com/identitytoolkit/v3/relyingparty/getAccountInfo",
+            timeout=10
+        )
+        return {
+            "status": "connected",
+            "response_code": response.status_code,
+            "message": "Firebase connection successful"
+        }
+    except Exception as e:
+        return {
+            "status": "failed",
+            "error": str(e),
+            "message": "Firebase connection failed"
+        }
+
 @app.post("/users/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if crud.get_user(db, user.username):
@@ -89,9 +115,19 @@ These routes are protected with the JWT token provided by Firebase.
 '''
 
 @app.put("/users/{uid}/bio")
-async def update_bio(bio: str, user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
-    uid = user.get("uid")
-    return crud.update_bio(db, uid, bio)
+async def update_bio(
+    uid: str,
+    bio_data: dict = Body(...),
+    user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user_uid = user.get("uid")
+    bio = bio_data.get("bio")
+    
+    if not bio:
+        raise HTTPException(status_code=400, detail="Bio is required")
+    
+    return crud.update_bio(db, user_uid, bio)
 
 @app.post("/users/{uid}/wpm")
 async def update_wpm(wpm: float, user: dict = Depends(get_current_user) ,db: Session = Depends(get_db)):

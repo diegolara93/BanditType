@@ -34,11 +34,12 @@ export default async function Profile({
 }) {
 
 
+    const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
 
 
     const getBio = async(username: string) => {
         try {
-            const resp = await axios.get(`http://127.0.0.1:8000/users/${username}/bio`)
+            const resp = await axios.get(`${apiBaseURL}/users/${username}/bio`)
             let bio = JSON.stringify(resp.data).slice(1, -1);
             return bio
         } catch(error) {
@@ -48,7 +49,7 @@ export default async function Profile({
 
     const getStats = async(username: string) => {
         try {
-            const resp = await axios.get(`http://127.0.0.1:8000/users/${username}/stats`)
+            const resp = await axios.get(`${apiBaseURL}/users/${username}/stats`)
             return resp.data
         } catch(error) {
             console.log("Failed to get stats", error);

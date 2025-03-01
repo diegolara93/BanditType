@@ -20,11 +20,12 @@ import { auth } from "@/utils/firebase"
 import { ClipboardList, Github, House, Keyboard, LogIn, LogOut, Swords, UserPen } from "lucide-react"
 import axios from "axios"
 
+const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function NavBar() {
   const getUsername = async(uid: string) => {
     try {
-        const resp = await axios.get(`http://127.0.0.1:8000/users/${uid}/username`)
+        const resp = await axios.get(`${apiBaseURL}/users/${uid}/username`)
         let username = JSON.stringify(resp.data).slice(1, -1);
         return username
     } catch (error) {

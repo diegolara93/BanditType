@@ -14,18 +14,22 @@ interface EditProfileButtonProps {
   username: string;
 }
 
+const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const updateBio = async(uid: string, bio: string, user: User) => {
   try {
     const token = await user.getIdToken();
-    const resp = await axios.put(`http://127.0.0.1:8000/users/${uid}/bio`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
-        bio: bio
+    const resp = await axios.put(
+      `${apiBaseURL}/users/${uid}/bio`, 
+      { bio: bio },  // Send in request body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000  // 10 second client-side timeout
       }
-    });
+    );
     alert("Bio changed, please refresh");
     return true;
   } catch (error) {
@@ -37,7 +41,7 @@ const updateBio = async(uid: string, bio: string, user: User) => {
 
 const getUsername = async(uid: string) => {
     try {
-        const resp = await axios.get(`http://127.0.0.1:8000/users/${uid}/username`)
+        const resp = await axios.get(`${apiBaseURL}/users/${uid}/username`)
         let username = JSON.stringify(resp.data).slice(1, -1);
         console.log("user here: ", username)
         return username
