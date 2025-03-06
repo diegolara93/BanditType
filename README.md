@@ -1,3 +1,4 @@
-Making a MonkeyType-like site with NextJS, Python with FastAPI and MySQL.
+MonkeyType like game with Python and NextJS
+![alt text](gif.gif)
 
 
